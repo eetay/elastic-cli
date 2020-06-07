@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 if [ -z "$2" ]; then
 	echo "usage: $0 <server> <commands-pipeline>"
 	exit 1
@@ -59,5 +59,5 @@ function query {
 #	set -x
 #	tr '\n' ' ' | sed -e "s/ /,/g" | sed -e "s#^#$SERVER/#" | xargs $CURL -X DELETE
 #}
-
+set -x
 eval $2
