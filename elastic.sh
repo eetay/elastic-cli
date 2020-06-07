@@ -12,7 +12,7 @@ function patchMapping {
 }
 
 function indices {
-	$CURL "$LIST" | jq -r ".[].index" | grep "${1:-*}"
+	$CURL "$LIST" | jq -r ".[].index" | grep "${1:-.}"
 }
 
 function cluster {
