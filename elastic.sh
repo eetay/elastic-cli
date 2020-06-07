@@ -1,6 +1,10 @@
 #!/bin/bash -xe
-SERVER=http://graylog-es.psamvp.hcs.harman.com:9200
-LIST=$SERVER/_cat/indices?format=json
+if [ -z "$2" ]; then
+	echo "usage: $0 <server> <commands-pipeline>"
+	exit 1
+fi
+
+SERVER=$1
 CURL="curl -k -s"
 XARGS="xargs -t"
 
@@ -12,7 +16,7 @@ function patchMapping {
 }
 
 function indices {
-	$CURL "$LIST" | jq -r ".[].index" | grep "${1:-.}"
+	$CURL "$SERVER/_cat/indices?format=json" | jq -r ".[].index" | grep "${1:-.}"
 }
 
 function cluster {
@@ -43,7 +47,7 @@ function mapping {
 	xargs -I INDEX $CURL "$SERVER/INDEX/_mapping" | jq .
 }
 
-function delete {
+function delete-by-query {
 	$XARGS -I INDEX $CURL -X POST "$SERVER/INDEX/_delete_by_query" -H 'Content-Type: application/json' -d '{"query":{"query_string":{ "query": "'${1:-*}'"}}}' | jq . 
 }
 
@@ -56,4 +60,4 @@ function query {
 #	tr '\n' ' ' | sed -e "s/ /,/g" | sed -e "s#^#$SERVER/#" | xargs $CURL -X DELETE
 #}
 
-eval $1
+eval $2
